@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Contracts;
 using WebAPI.Database;
 using WebAPI.Services;
 
@@ -11,6 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddMemoryCache();
+
+
+builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<ExpenseService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>

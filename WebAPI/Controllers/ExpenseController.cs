@@ -15,6 +15,12 @@ namespace WebAPI.Controllers
             _expenseService = expenseService;
         }
 
+        [HttpGet("get/{id}")]
+        public ActionResult<ExpenseDisplayDto> GetExpense(int id)
+        {
+            return _expenseService.GetExpense(id);
+        }
+
         [HttpGet("get")]
         public ActionResult<ExpenseDisplayDtoList> GetExpenses()
         {
@@ -39,8 +45,25 @@ namespace WebAPI.Controllers
         [HttpPatch("update/{id}")]
         public ActionResult<Response> UpdateExpense(int id, ExpenseUpdateDto expense)
         {
+            // Add validations
             Response response = new Response();
             bool updateExpense = _expenseService.UpdateExpense(id, expense);
+
+            if (!updateExpense)
+            {
+                response.Result = false;
+                response.Message = "Internal server error!";
+            }
+
+            return response;
+        }
+
+        [HttpDelete("delete/{id}")]
+        public ActionResult<Response> DeleteExpense(int id)
+        {
+            // Add validations
+            Response response = new Response();
+            bool updateExpense = _expenseService.DeleteExpense(id);
 
             if (!updateExpense)
             {

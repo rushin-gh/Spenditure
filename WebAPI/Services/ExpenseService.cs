@@ -2,6 +2,7 @@
 using WebAPI.Database;
 using WebAPI.Models;
 using WebAPI.Contracts;
+using WebAPI.Data;
 
 namespace WebAPI.Services
 {
@@ -22,10 +23,9 @@ namespace WebAPI.Services
         public ExpenseDisplayDto GetExpense(int id)
         {
             var exp = _context.Expenses.FirstOrDefault(exp => exp.Id == id);
-
             if (exp == null)
             {
-                throw new Exception(_messageService.GetMessage("MSG-00001"));
+                throw new Exception(string.Format(_messageService.GetMessage(Messages.Expense.NotFound), id));
             }
 
             var expense = new ExpenseDisplayDto()
@@ -65,7 +65,7 @@ namespace WebAPI.Services
             return expenses;
         }
 
-        public bool AddExpense(ExpenseWriteDto expense)
+        public void AddExpense(ExpenseWriteDto expense)
         {
             // TODO - Validations
             _context.Expenses.Add(new Expense()
@@ -75,31 +75,30 @@ namespace WebAPI.Services
                 Desc = expense.Desc,
                 CreatedAt = DateTime.Now,
                 CreatedBy = string.IsNullOrWhiteSpace(expense.CreatedBy)
-                                ? "system"
-                                : expense.CreatedBy,
+                            ? "system"
+                            : expense.CreatedBy,
                 Status = true
             });
             _context.SaveChanges();
-            return true;
         }
 
-        public bool UpdateExpense(int id, ExpenseUpdateDto expense)
+        public ExpenseDisplayDto UpdateExpense(int id, ExpenseUpdateDto expense)
         {
+            ExpenseDisplayDto expDisplayDto = null;
+
             // TODO - Add validations
             if (expense == null)
             {
-                return false;
+                throw new Exception(_messageService.GetMessage(Messages.Expense.InvalidUpdateModel));
             }
 
             var exp = _context.Expenses.FirstOrDefault(exp => exp.Id == id);
-            // TODO - Add meaningful messages to failure
             if (exp == null)
             {
-                return false;
+                throw new Exception(string.Format(_messageService.GetMessage(Messages.Expense.NotFound), id));
             }
 
             bool isExpModified = false;
-
             if (expense.Title != null && expense.Title != exp.Title)
             {
                 exp.Title = expense.Title;
@@ -123,27 +122,60 @@ namespace WebAPI.Services
                 exp.ModifiedAt = DateTime.Now;
                 exp.ModifiedBy = expense.ModifiedBy;
                 _context.SaveChanges();
-                return true;
+
+                expDisplayDto = _context.Expenses
+                                    .Where(exp => exp.Id == id)
+                                    .Select(exp => new ExpenseDisplayDto
+                                    {
+                                        Id = exp.Id,
+                                        Title = exp.Title,
+                                        Amount = exp.Amount,
+                                        Desc = exp.Desc,
+                                        CreatedBy = exp.CreatedBy,
+                                        CreatedAt = exp.CreatedAt,
+                                        ModifiedBy = exp.ModifiedBy,
+                                        ModifiedAt = exp.ModifiedAt
+                                    })
+                                    .FirstOrDefault()!;
+                return expDisplayDto;
             }
 
-            return false;
+            throw new Exception(string.Format(_messageService.GetMessage(Messages.Expense.NothingToUpdate), id));
         }
 
 
-        public bool DeleteExpense(int id)
+        public ExpenseDisplayDto DeleteExpense(int id)
         {
+            var expDisplayDto = new ExpenseDisplayDto();
+
             // TODO - Add validations
             var exp = _context.Expenses.FirstOrDefault(exp => exp.Id == id);
 
             // TODO - Add meaningful messages to failure
             if (exp == null)
             {
-                return false;
+                throw new Exception(string.Format(_messageService.GetMessage(Messages.Expense.NotFound), id));
             }
+
+            expDisplayDto = _context.Expenses
+                                .Where(exp => exp.Id == id)
+                                .Select(exp => new ExpenseDisplayDto
+                                {
+                                    Id = exp.Id,
+                                    Title = exp.Title,
+                                    Amount = exp.Amount,
+                                    Desc = exp.Desc,
+                                    CreatedBy = exp.CreatedBy,
+                                    CreatedAt = exp.CreatedAt,
+                                    ModifiedBy = exp.ModifiedBy,
+                                    ModifiedAt = exp.ModifiedAt
+                                })
+                                .FirstOrDefault()!;
 
             _context.Expenses.Remove(exp);
             _context.SaveChanges();
-            return true;
+
+            return expDisplayDto;
         }
 
 

@@ -174,7 +174,7 @@ namespace WebAPI.Services
                                 })
                                 .FirstOrDefault()!;
 
-            _context.Expenses.Remove(exp);
+            _context.Expenses.FirstOrDefault(exp => exp.Id == id).Status = false;
             _context.SaveChanges();
 
             return expDisplayDto;

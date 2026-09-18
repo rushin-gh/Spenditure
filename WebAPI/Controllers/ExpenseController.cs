@@ -3,6 +3,7 @@ using WebAPI.Models;
 using WebAPI.Contracts;
 using WebAPI.Services;
 using WebAPI.Data;
+using WebAPI.Custom;
 
 namespace WebAPI.Controllers
 {
@@ -31,19 +32,55 @@ namespace WebAPI.Controllers
                 response.Data = _expenseService.GetExpense(id);
                 response.Message = _messageService.GetMessage(Messages.Expense.Found);
             }
-            catch(Exception ex)
+            catch(NotFoundException ex)
             {
                 response.Result = false;
                 response.Message = ex.Message;
-                response.Data = null;
+                return StatusCode(StatusCodes.Status404NotFound, response);
+            }
+            catch(BadRequestException ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
             return response;
         }
 
         [HttpGet("get")]
-        public ActionResult<ExpenseDisplayDtoList> GetExpenses()
+        public ActionResult<Response<ExpenseDisplayDtoList>> GetExpenses()
         {
-            return _expenseService.GetAllExpenses();
+            var response = new Response<ExpenseDisplayDtoList>();
+            try
+            {
+                response.Data = _expenseService.GetAllExpenses();
+                response.Message = _messageService.GetMessage(Messages.Expense.Found);
+            }
+            catch (NotFoundException ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status404NotFound, response);
+            }
+            catch (BadRequestException ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+            return response;
         }
 
         [HttpPost("add")]
@@ -56,13 +93,24 @@ namespace WebAPI.Controllers
                 response.Message = _messageService.GetMessage(Messages.Expense.Added);
                 response.Data = expense;
             }
-            catch(Exception ex)
+            catch (NotFoundException ex)
             {
                 response.Result = false;
                 response.Message = ex.Message;
-                response.Data = null;
-            } 
-
+                return StatusCode(StatusCodes.Status404NotFound, response);
+            }
+            catch (BadRequestException ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
             return response;
         }
 
@@ -76,13 +124,24 @@ namespace WebAPI.Controllers
                 response.Data = _expenseService.UpdateExpense(id, expense);
                 response.Message = string.Format(_messageService.GetMessage(Messages.Expense.UpdatedSuccessfully), id);
             }
-            catch(Exception ex)
+            catch (NotFoundException ex)
             {
                 response.Result = false;
                 response.Message = ex.Message;
-                response.Data = null;
+                return StatusCode(StatusCodes.Status404NotFound, response);
             }
-
+            catch (BadRequestException ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
             return response;
         }
 
@@ -96,13 +155,24 @@ namespace WebAPI.Controllers
                 response.Data = _expenseService.DeleteExpense(id);
                 response.Message = string.Format(_messageService.GetMessage(Messages.Expense.Deleted), id);
             }
-            catch(Exception ex)
+            catch (NotFoundException ex)
             {
                 response.Result = false;
                 response.Message = ex.Message;
-                response.Data = null;
+                return StatusCode(StatusCodes.Status404NotFound, response);
             }
-
+            catch (BadRequestException ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                response.Result = false;
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
             return response;
         }
     }

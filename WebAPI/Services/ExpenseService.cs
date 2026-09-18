@@ -3,6 +3,8 @@ using WebAPI.Database;
 using WebAPI.Models;
 using WebAPI.Contracts;
 using WebAPI.Data;
+using WebAPI.Custom;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace WebAPI.Services
 {
@@ -25,7 +27,7 @@ namespace WebAPI.Services
             var exp = _context.Expenses.FirstOrDefault(exp => exp.Id == id);
             if (exp == null)
             {
-                throw new Exception(string.Format(_messageService.GetMessage(Messages.Expense.NotFound), id));
+                throw new NotFoundException(string.Format(_messageService.GetMessage(Messages.Expense.NotFound), id));
             }
 
             var expense = new ExpenseDisplayDto()
@@ -89,13 +91,13 @@ namespace WebAPI.Services
             // TODO - Add validations
             if (expense == null)
             {
-                throw new Exception(_messageService.GetMessage(Messages.Expense.InvalidUpdateModel));
+                throw new BadRequestException(_messageService.GetMessage(Messages.Expense.InvalidUpdateModel));
             }
 
             var exp = _context.Expenses.FirstOrDefault(exp => exp.Id == id);
             if (exp == null)
             {
-                throw new Exception(string.Format(_messageService.GetMessage(Messages.Expense.NotFound), id));
+                throw new NotFoundException(string.Format(_messageService.GetMessage(Messages.Expense.NotFound), id));
             }
 
             bool isExpModified = false;
@@ -140,7 +142,7 @@ namespace WebAPI.Services
                 return expDisplayDto;
             }
 
-            throw new Exception(string.Format(_messageService.GetMessage(Messages.Expense.NothingToUpdate), id));
+            throw new BadRequestException(string.Format(_messageService.GetMessage(Messages.Expense.NothingToUpdate), id));
         }
 
 
@@ -154,7 +156,7 @@ namespace WebAPI.Services
             // TODO - Add meaningful messages to failure
             if (exp == null)
             {
-                throw new Exception(string.Format(_messageService.GetMessage(Messages.Expense.NotFound), id));
+                throw new NotFoundException(string.Format(_messageService.GetMessage(Messages.Expense.NotFound), id));
             }
 
             expDisplayDto = _context.Expenses
@@ -177,7 +179,5 @@ namespace WebAPI.Services
 
             return expDisplayDto;
         }
-
-
     }
 }

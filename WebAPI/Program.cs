@@ -39,6 +39,11 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.MapGet("/", (HttpContext context) =>
+{
+    context.Response.WriteAsync("Server is up an running!");
+});
+
 app.MapControllers();
 
 app.Run();

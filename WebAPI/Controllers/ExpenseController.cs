@@ -27,29 +27,9 @@ namespace WebAPI.Controllers
         public ActionResult<Response<ExpenseDisplayDto>> GetExpense(int id)
         {
             var response = new Response<ExpenseDisplayDto>();
-            try
-            {
-                response.Data = _expenseService.GetExpense(id);
-                response.Message = _messageService.GetMessage(Messages.Expense.Found);
-            }
-            catch(NotFoundException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status404NotFound, response);
-            }
-            catch(BadRequestException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status400BadRequest, response);
-            }
-            catch (Exception ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+            response.Data = _expenseService.GetExpense(id);
+            response.Message = _messageService.GetMessage(Messages.Expense.Found);
+
             return response;
         }
 
@@ -57,29 +37,9 @@ namespace WebAPI.Controllers
         public ActionResult<Response<ExpenseDisplayDtoList>> GetExpenses()
         {
             var response = new Response<ExpenseDisplayDtoList>();
-            try
-            {
-                response.Data = _expenseService.GetAllExpenses();
-                response.Message = _messageService.GetMessage(Messages.Expense.Found);
-            }
-            catch (NotFoundException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status404NotFound, response);
-            }
-            catch (BadRequestException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status400BadRequest, response);
-            }
-            catch (Exception ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+            response.Data = _expenseService.GetAllExpenses();
+            response.Message = _messageService.GetMessage(Messages.Expense.Found);
+
             return response;
         }
 
@@ -87,31 +47,11 @@ namespace WebAPI.Controllers
         public ActionResult<Response<ExpenseWriteDto>> AddExpense(ExpenseWriteDto expense)
         {
             var response = new Response<ExpenseWriteDto>();
-            try
-            {
-                _expenseService.AddExpense(expense);
-                response.Message = _messageService.GetMessage(Messages.Expense.Added);
-                response.Data = expense;
-            }
-            catch (NotFoundException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status404NotFound, response);
-            }
-            catch (BadRequestException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status400BadRequest, response);
-            }
-            catch (Exception ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-            return response;
+            _expenseService.AddExpense(expense);
+            response.Message = _messageService.GetMessage(Messages.Expense.Added);
+            response.Data = expense;
+
+            return StatusCode(StatusCodes.Status201Created, response);
         }
 
         [HttpPatch("update/{id}")]
@@ -119,60 +59,20 @@ namespace WebAPI.Controllers
         {
             // Add validations
             var response = new Response<ExpenseDisplayDto>();
-            try
-            {
-                response.Data = _expenseService.UpdateExpense(id, expense);
-                response.Message = string.Format(_messageService.GetMessage(Messages.Expense.UpdatedSuccessfully), id);
-            }
-            catch (NotFoundException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status404NotFound, response);
-            }
-            catch (BadRequestException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status400BadRequest, response);
-            }
-            catch (Exception ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+            response.Data = _expenseService.UpdateExpense(id, expense);
+            response.Message = string.Format(_messageService.GetMessage(Messages.Expense.UpdatedSuccessfully), id);
+
             return response;
         }
 
         [HttpDelete("delete/{id}")]
         public ActionResult<Response<ExpenseDisplayDto>> DeleteExpense(int id)
         {
-            // Add validations
+            // TODO : Add validations
             var response = new Response<ExpenseDisplayDto>();
-            try
-            {
-                response.Data = _expenseService.DeleteExpense(id);
-                response.Message = string.Format(_messageService.GetMessage(Messages.Expense.Deleted), id);
-            }
-            catch (NotFoundException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status404NotFound, response);
-            }
-            catch (BadRequestException ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status400BadRequest, response);
-            }
-            catch (Exception ex)
-            {
-                response.Result = false;
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
+            response.Data = _expenseService.DeleteExpense(id);
+            response.Message = string.Format(_messageService.GetMessage(Messages.Expense.Deleted), id);
+
             return response;
         }
     }

@@ -11,6 +11,12 @@
             public const string UpdatedSuccessfully = "MSG-00005";
             public const string NothingToUpdate = "MSG-00006";
             public const string Deleted = "MSG-00007";
+
+            public static class Validations
+            {
+                public const string EmptyTitle = "MSG-00008";
+                public const string InvalidAmount = "MSG-00009";
+            }
         }
     }
 }

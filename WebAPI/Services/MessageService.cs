@@ -33,14 +33,15 @@ namespace WebAPI.Services
 
         private Dictionary<string, string> GetMessages()
         {
-            if (_cache.TryGetValue(
-                CacheKey,
-                out Dictionary<string, string>? messages))
-            {
-                return messages!;
-            }
+            // COMMENTING TILL CHACHE INVALIDATION IMPLEMENTATION
+            //if (_cache.TryGetValue(
+            //    CacheKey,
+            //    out Dictionary<string, string>? messages))
+            //{
+            //    return messages!;
+            //}
 
-            messages = _context.Messages
+            Dictionary<string, string> messages = _context.Messages
                         .AsNoTracking()
                         .Where(x => x.Status == true)
                         .ToDictionary(

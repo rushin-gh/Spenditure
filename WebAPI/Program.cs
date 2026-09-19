@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Contracts;
 using WebAPI.Database;
+using WebAPI.Middlewares;
 using WebAPI.Services;
+using WebAPI.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,15 +16,17 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
 
-
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<ExpenseService>();
+builder.Services.AddScoped<ExpenseValidators>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AppDbConnection"))
 );
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

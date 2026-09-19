@@ -5,6 +5,7 @@ using WebAPI.Contracts;
 using WebAPI.Data;
 using WebAPI.Custom;
 using Microsoft.AspNetCore.Http.HttpResults;
+using WebAPI.Validators;
 
 namespace WebAPI.Services
 {
@@ -12,14 +13,17 @@ namespace WebAPI.Services
     {
         private readonly AppDbContext _context;
         private readonly IMessageService _messageService;
+        private readonly ExpenseValidators _expenseValidators;
 
         public ExpenseService(
             AppDbContext context,
-            IMessageService messageService
+            IMessageService messageService,
+            ExpenseValidators expenseValidators
         )
         {
             _context = context;
             _messageService = messageService;
+            _expenseValidators = expenseValidators;
         }
 
         public ExpenseDisplayDto GetExpense(int id)
@@ -69,7 +73,8 @@ namespace WebAPI.Services
 
         public void AddExpense(ExpenseWriteDto expense)
         {
-            // TODO - Validations
+            _expenseValidators.Validate(expense);
+
             _context.Expenses.Add(new Expense()
             {
                 Title = expense.Title,
